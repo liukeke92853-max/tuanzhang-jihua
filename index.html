@@ -1,0 +1,846 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>团长中心 - 合作计划 Demo</title>
+  <style>
+    :root {
+      --bg: #f4f7fc;
+      --panel: #fff;
+      --line: #e6edf7;
+      --head: #f6f8fc;
+      --text: #1f2937;
+      --muted: #667085;
+      --blue: #2468f2;
+      --green: #16a36a;
+      --orange: #d97706;
+      --red: #e23b52;
+      --shadow: 0 10px 28px rgba(25, 43, 77, .07);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-width: 1280px;
+      background: var(--bg);
+      color: var(--text);
+      font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      letter-spacing: 0;
+    }
+
+    button { font: inherit; }
+
+    .app {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      padding: 16px 12px;
+      background: linear-gradient(180deg, #edf5ff 0%, #f7faff 100%);
+      border-right: 1px solid var(--line);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      height: 38px;
+      margin-bottom: 18px;
+      font-weight: 800;
+      color: #1f3f76;
+    }
+
+    .brand-mark {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: var(--blue);
+      border-radius: 8px;
+      font-weight: 800;
+    }
+
+    .nav-section { margin-bottom: 14px; }
+
+    .nav-title {
+      padding: 9px 10px;
+      color: #46566c;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .nav-item {
+      height: 36px;
+      display: flex;
+      align-items: center;
+      padding-left: 28px;
+      border-radius: 6px;
+      color: #536173;
+    }
+
+    .nav-item.active {
+      color: var(--blue);
+      background: #fff;
+      box-shadow: 0 4px 14px rgba(36, 104, 242, .12);
+      font-weight: 700;
+    }
+
+    .main { padding: 0 18px 24px; min-width: 0; }
+
+    .topbar {
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .page-title { font-size: 18px; font-weight: 800; }
+
+    .top-actions { display: flex; gap: 10px; }
+
+    .ghost-btn {
+      height: 32px;
+      padding: 0 12px;
+      border: 1px solid #d6dfec;
+      border-radius: 6px;
+      background: #fff;
+      color: #4b5563;
+      cursor: pointer;
+    }
+
+    .panel,
+    .table-wrap {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .status-tabs,
+    .sub-tabs {
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .status-tabs { height: 54px; gap: 24px; padding: 0 16px; }
+    .sub-tabs { height: 42px; gap: 30px; padding: 0 16px; }
+
+    .status-tab,
+    .sub-tab {
+      height: 100%;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #4b5563;
+      cursor: pointer;
+      position: relative;
+      white-space: nowrap;
+    }
+
+    .status-tab.active {
+      color: var(--blue);
+      font-weight: 800;
+    }
+
+    .status-tab.active::after,
+    .sub-tab.active::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -1px;
+      height: 2px;
+      background: currentColor;
+    }
+
+    .sub-tab.active { font-weight: 800; }
+    .sub-tab.success.active { color: var(--green); }
+    .sub-tab.failed.active { color: var(--orange); }
+
+    .notice {
+      margin: 10px 16px 12px;
+      padding: 10px 12px;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      color: #667085;
+      background: #f7faff;
+      border: 1px solid #dfe9ff;
+      border-radius: 6px;
+    }
+
+    .notice-dot {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 18px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--blue);
+      color: #fff;
+      font-size: 12px;
+      margin-top: 1px;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: 180px 220px 190px 250px 220px 220px;
+      gap: 12px;
+      padding: 0 16px 16px;
+      overflow: hidden;
+    }
+
+    .control {
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      border: 1px solid #d6dfec;
+      border-radius: 6px;
+      color: #7b8798;
+      background: #fff;
+      min-width: 0;
+    }
+
+    .table-wrap { margin-top: 14px; }
+
+    .table-title {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      font-weight: 800;
+      border-bottom: 1px solid var(--line);
+    }
+
+    table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: collapse;
+    }
+
+    th {
+      height: 44px;
+      padding: 0 12px;
+      text-align: left;
+      color: #475467;
+      background: var(--head);
+      border-bottom: 1px solid var(--line);
+      font-weight: 800;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: middle;
+    }
+
+    .product {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .thumb {
+      width: 46px;
+      height: 46px;
+      flex: 0 0 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .food { background: linear-gradient(135deg, #f59e0b, #f43f5e); }
+    .wine { background: linear-gradient(135deg, #7c2d12, #f97316); }
+    .home { background: linear-gradient(135deg, #0ea5e9, #14b8a6); }
+    .beauty { background: linear-gradient(135deg, #ec4899, #8b5cf6); }
+
+    .product-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 800;
+    }
+
+    .product-meta,
+    .muted {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .summary {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      align-items: flex-start;
+    }
+
+    .summary-line {
+      line-height: 20px;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .summary-line.success { color: #087b50; }
+    .summary-line.failed { color: #a15c00; }
+    .summary-line.pending { color: #a15c00; }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      height: 24px;
+      padding: 0 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .pill.green { color: #087b50; background: #e8f7ef; }
+    .pill.orange { color: #a15c00; background: #fff4df; }
+    .pill.red { color: #bc2440; background: #fff0f2; }
+
+    .actions { display: flex; gap: 10px; }
+
+    .link-btn {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--blue);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .expand-row { background: #fbfdff; }
+    .expand-cell { padding: 0 12px 16px 68px; }
+
+    .detail-box {
+      overflow: hidden;
+      border: 1px solid #dfe8f7;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .detail-head {
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      color: #475467;
+      background: #f7faff;
+      border-bottom: 1px solid #dfe8f7;
+      font-weight: 700;
+    }
+
+    .mini-table th { height: 36px; background: #fff; font-size: 12px; }
+    .mini-table td { padding: 8px 12px; font-size: 12px; }
+
+    .pagination {
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 0 16px;
+      border-top: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .page-btn,
+    .page-size {
+      height: 30px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #d6dfec;
+      border-radius: 6px;
+      background: #fff;
+      color: #536173;
+      min-width: 30px;
+      padding: 0 10px;
+    }
+
+    .page-btn.active {
+      border-color: var(--blue);
+      color: #fff;
+      background: var(--blue);
+    }
+
+    .modal-mask {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(17, 24, 39, .42);
+      z-index: 20;
+    }
+
+    .modal-mask.show { display: flex; }
+
+    .modal {
+      width: 680px;
+      overflow: hidden;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 18px 48px rgba(15, 23, 42, .25);
+    }
+
+    .modal-head {
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      border-bottom: 1px solid var(--line);
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .close {
+      width: 32px;
+      height: 32px;
+      border: 0;
+      background: transparent;
+      color: #98a2b3;
+      cursor: pointer;
+      font-size: 24px;
+    }
+
+    .modal-body { padding: 24px; }
+
+    .alert-main {
+      padding: 20px;
+      text-align: center;
+      background: #f2f6ff;
+      border-radius: 6px;
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.65;
+    }
+
+    .alert-main b { color: var(--orange); }
+    .modal-copy { margin-top: 18px; color: #566176; line-height: 1.75; }
+    .modal-foot { padding: 0 24px 24px; display: flex; justify-content: flex-end; }
+
+    .primary-btn {
+      height: 38px;
+      padding: 0 22px;
+      border: 0;
+      border-radius: 6px;
+      color: #fff;
+      background: var(--blue);
+      cursor: pointer;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-mark">团</span><span>团长中心</span></div>
+      <div class="nav-section">
+        <div class="nav-title">我的订单 <span>⌃</span></div>
+        <div class="nav-item">订单明细</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-title">合作管理 <span>⌃</span></div>
+        <div class="nav-item">一键提报</div>
+        <div class="nav-item active">合作计划</div>
+        <div class="nav-item">推广效果</div>
+        <div class="nav-item">合作订单</div>
+        <div class="nav-item">样品申请</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-title">爆单线索 <span>⌃</span></div>
+        <div class="nav-item">橱窗招商</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-title">提报管理 <span>⌃</span></div>
+        <div class="nav-item">活动广场</div>
+        <div class="nav-item">提报记录</div>
+        <div class="nav-item">计划审核</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="page-title">合作计划</div>
+        <div class="top-actions">
+          <button class="ghost-btn" id="openReminder">暂未重点推广提醒</button>
+          <button class="ghost-btn">配置</button>
+          <button class="ghost-btn">重置</button>
+        </div>
+      </header>
+
+      <section class="panel">
+        <div class="status-tabs" id="mainTabs"></div>
+        <div class="sub-tabs" id="subTabs"></div>
+        <div class="notice" id="notice"></div>
+        <div class="filters">
+          <div class="control">团长账号：请选择 <span>⌄</span></div>
+          <div class="control">店铺名称：请选择或者搜索 <span>⌄</span></div>
+          <div class="control">商品ID：请选择或者搜索 <span>⌄</span></div>
+          <div class="control">提报时间：开始日期　-　结束日期 <span>□</span></div>
+          <div class="control">商品类目：请选择商品类目 <span>⌄</span></div>
+          <div class="control">到期时间：请选择 <span>⌄</span></div>
+        </div>
+      </section>
+
+      <section class="table-wrap">
+        <div class="table-title">
+          <div>记录明细</div>
+        </div>
+        <table>
+          <colgroup>
+            <col style="width: 300px">
+            <col style="width: 92px">
+            <col style="width: 90px">
+            <col style="width: 92px">
+            <col style="width: 150px">
+            <col style="width: 110px">
+            <col style="width: 180px">
+            <col style="width: 170px">
+            <col style="width: 150px">
+          </colgroup>
+          <thead id="tableHead"></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+        <div class="pagination">
+          <span class="page-size">10条/页</span>
+          <button class="page-btn">‹</button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">›</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-mask" id="modalMask">
+    <div class="modal">
+      <div class="modal-head">
+        <span>暂未重点推广提醒</span>
+        <button class="close" id="closeModal">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="alert-main">
+          截止昨日24点，您推广中的商品有 <b id="alertCount">0</b> 个<br>
+          暂未获得抖老板重点推广
+        </div>
+        <div class="modal-copy">您可以至「合作计划 - 推广中 - 暂未重点推广」查看详情。</div>
+        <div class="modal-copy">说明：抖老板会综合考虑佣金率、服务费率、推广周期等因素筛选重点推广商品。建议关注该商品下各计划配置与推广表现。</div>
+      </div>
+      <div class="modal-foot"><button class="primary-btn" id="confirmModal">我知道了</button></div>
+    </div>
+  </div>
+
+  <script>
+    const products = [
+      {
+        id: "6958210371",
+        name: "【三只松鼠5+2混合坚果】每日坚果畅享款礼盒",
+        store: "三只松鼠官方旗舰店",
+        price: "49.9",
+        category: "食品饮料",
+        thumb: "food",
+        plans: [
+          { id: "3082711", activity: "抖老板商品池2", result: "success", commission: 15, serviceFee: 1.8, submitTime: "2025.09.15 16:25:28", protect: "0个月", period: "2025.09.11 至 2028.09.30", reason: "", score: 96 },
+          { id: "3714537", activity: "抖老板商品池4", result: "failed", commission: 13, serviceFee: 2.2, submitTime: "2025.09.15 02:34:22", protect: "0个月", period: "2025.09.15 至 2026.12.31", reason: "服务费率偏高", score: 80 },
+          { id: "3718059", activity: "抖老板商品池5", result: "failed", commission: 12, serviceFee: 2.5, submitTime: "2025.09.14 18:12:02", protect: "0个月", period: "2025.09.14 至 2026.08.31", reason: "综合竞争力不足", score: 76 }
+        ]
+      },
+      {
+        id: "6043729110",
+        name: "九江双蒸纯粮食米香低度白酒浸泡青梅酒",
+        store: "九江双蒸酒类旗舰店",
+        price: "25.5",
+        category: "酒类",
+        thumb: "wine",
+        plans: [
+          { id: "3714537", activity: "抖老板商品池4", result: "success", commission: 12, serviceFee: 1.8, submitTime: "2025.09.12 01:53:06", protect: "0个月", period: "2025.09.12 至 2026.12.31", reason: "", score: 91 }
+        ]
+      },
+      {
+        id: "8002917436",
+        name: "铜合金布艺胸针 手工制作玫瑰花高级胸针",
+        store: "长卿丝绸饰品店",
+        price: "9.99",
+        category: "钟表配饰",
+        thumb: "beauty",
+        plans: [
+          { id: "1136784", activity: "抖老板商品池", result: "success", commission: 21, serviceFee: 0.6, submitTime: "2025.09.10 05:13:01", protect: "0个月", period: "2025.09.10 至 2028.03.31", reason: "", score: 94 },
+          { id: "3718059", activity: "抖老板商品池5", result: "success", commission: 18, serviceFee: 0.8, submitTime: "2025.09.09 19:20:40", protect: "0个月", period: "2025.09.09 至 2027.12.31", reason: "", score: 88 }
+        ]
+      },
+      {
+        id: "6021834756",
+        name: "【特别添加DHA海藻油】三纯牛初乳奶贝营养零食",
+        store: "三纯官方旗舰店",
+        price: "34.9",
+        category: "食品饮料",
+        thumb: "food",
+        plans: [
+          { id: "3714537", activity: "抖老板商品池4", result: "failed", commission: 15, serviceFee: 3, submitTime: "2025.09.15 02:34:22", protect: "0个月", period: "2025.09.15 至 2026.12.31", reason: "服务费率偏高", score: 70 },
+          { id: "3718059", activity: "抖老板商品池5", result: "failed", commission: 14, serviceFee: 2.8, submitTime: "2025.09.14 21:10:19", protect: "0个月", period: "2025.09.14 至 2026.11.30", reason: "同类商品竞争激烈", score: 69 },
+          { id: "1136784", activity: "抖老板商品池", result: "failed", commission: 13, serviceFee: 2.5, submitTime: "2025.09.13 06:08:48", protect: "0个月", period: "2025.09.13 至 2026.10.31", reason: "转化预估偏低", score: 66 }
+        ]
+      },
+      {
+        id: "7324819002",
+        name: "2025新款春装国风新款时尚刺绣提花长裙",
+        store: "红小蛙工厂店",
+        price: "59.9",
+        category: "服饰内衣",
+        thumb: "beauty",
+        plans: [
+          { id: "3718059", activity: "抖老板商品池5", result: "failed", commission: 15.3, serviceFee: 1.02, submitTime: "2025.09.13 06:08:48", protect: "0个月", period: "2025.09.13 至 2026.07.12", reason: "推广周期较短", score: 78 },
+          { id: "3714537", activity: "抖老板商品池4", result: "failed", commission: 14, serviceFee: 1.2, submitTime: "2025.09.12 05:45:35", protect: "0个月", period: "2025.09.12 至 2026.08.31", reason: "综合竞争力不足", score: 71 }
+        ]
+      },
+      {
+        id: "7129003458",
+        name: "抽纸悬挂式柔软加大加厚多功能壁挂软抽",
+        store: "云锦纸业",
+        price: "12.9",
+        category: "个护家清",
+        thumb: "home",
+        plans: [
+          { id: "3718059", activity: "抖老板商品池5", result: "pending", commission: 10, serviceFee: 1.2, submitTime: "2025.09.14 04:55:31", protect: "0个月", period: "2025.09.14 至 2026.12.31", reason: "", score: 0 },
+          { id: "3714537", activity: "抖老板商品池4", result: "failed", commission: 10, serviceFee: 1.2, submitTime: "2025.09.13 05:11:35", protect: "0个月", period: "2025.09.13 至 2026.12.31", reason: "等待其他计划结果", score: 64 }
+        ]
+      }
+    ];
+
+    const mainTabs = [
+      { key: "review", label: "待审核", count: 0 },
+      { key: "promoting", label: "推广中", count: products.length },
+      { key: "rejected", label: "申请未通过", count: 342 },
+      { key: "ended", label: "合作已终止", count: 58 },
+      { key: "expired", label: "合作已到期", count: 293 }
+    ];
+
+    const subTabs = [
+      { key: "success", label: "已获重点推广" },
+      { key: "failed", label: "暂未重点推广" }
+    ];
+
+    let currentSub = "success";
+    const expanded = new Set();
+
+    function getProductStatus(product) {
+      if (product.plans.some(plan => plan.result === "success")) return "success";
+      if (product.plans.some(plan => plan.result === "pending")) return "pending";
+      return "failed";
+    }
+
+    function countByResult(product, result) {
+      return product.plans.filter(plan => plan.result === result).length;
+    }
+
+    function getMainPlan(product) {
+      const status = getProductStatus(product);
+      const target = status === "success" ? "success" : "failed";
+      return [...product.plans].filter(plan => plan.result === target).sort((a, b) => b.score - a.score)[0] || product.plans[0];
+    }
+
+    function getLatestSubmitTime(product) {
+      return product.plans.map(plan => plan.submitTime).sort().at(-1);
+    }
+
+    function formatPercent(value) {
+      return `${value}%`;
+    }
+
+    function getRange(product, field) {
+      const values = product.plans.map(plan => plan[field]);
+      const min = Math.min(...values);
+      const max = Math.max(...values);
+      return min === max ? formatPercent(min) : `${formatPercent(min)}-${formatPercent(max)}`;
+    }
+
+    function renderMainTabs() {
+      document.getElementById("mainTabs").innerHTML = mainTabs.map(tab => `
+        <button class="status-tab ${tab.key === "promoting" ? "active" : ""}">${tab.label}（${tab.count}）</button>
+      `).join("");
+    }
+
+    function renderSubTabs() {
+      const target = document.getElementById("subTabs");
+      target.innerHTML = subTabs.map(tab => {
+        const count = products.filter(product => getProductStatus(product) === tab.key).length;
+        return `<button class="sub-tab ${tab.key} ${tab.key === currentSub ? "active" : ""}" data-key="${tab.key}">${tab.label}（${count}）</button>`;
+      }).join("");
+      target.querySelectorAll(".sub-tab").forEach(button => {
+        button.addEventListener("click", () => {
+          currentSub = button.dataset.key;
+          expanded.clear();
+          render();
+        });
+      });
+    }
+
+    function renderNotice() {
+      const copy = {
+        success: "已获重点推广说明：抖老板内部会综合考量佣金率、服务费率、推广时间等因素，筛选出更适合重点推广的商品；已获重点推广的商品将获得更多平台流量助力。",
+        failed: "暂未重点推广说明：抖老板内部会综合考量佣金率、服务费率、推广时间等因素进行评估，暂未重点推广的商品曝光量与推广力度将大幅降低，请及时关注！"
+      }[currentSub];
+      document.getElementById("notice").innerHTML = `<span class="notice-dot">i</span><span>${copy}</span>`;
+    }
+
+    function renderHead() {
+      document.getElementById("tableHead").innerHTML = `
+        <tr>
+          <th>商品信息</th>
+          <th>商品类目</th>
+          <th>计划汇总</th>
+          <th>佣金率</th>
+          <th>服务费率</th>
+          <th>最近提报时间</th>
+          <th>团长保护期</th>
+          <th>推广时间</th>
+          <th>操作</th>
+        </tr>
+      `;
+    }
+
+    function renderBody() {
+      const rows = products.filter(product => getProductStatus(product) === currentSub);
+      const body = document.getElementById("tableBody");
+      body.innerHTML = rows.map(product => {
+        const mainPlan = getMainPlan(product);
+        const success = countByResult(product, "success");
+        const failed = countByResult(product, "failed");
+        const pending = countByResult(product, "pending");
+        const isExpanded = expanded.has(product.id);
+        return `
+          <tr>
+            <td>
+              <div class="product">
+                <div class="thumb ${product.thumb}">${product.category.slice(0, 2)}</div>
+                <div style="min-width:0">
+                  <div class="product-name">${product.name}</div>
+                  <div class="product-meta">店铺：${product.store}　￥${product.price}</div>
+                </div>
+              </div>
+            </td>
+            <td>${product.category}</td>
+            <td>
+              <div class="summary">
+                <div class="summary-line success">重点推广：${success}条</div>
+                <div class="summary-line failed">暂未推广：${failed}条</div>
+                ${pending ? `<div class="summary-line pending">竞佣中：${pending}条</div>` : ""}
+              </div>
+            </td>
+            <td>${getRange(product, "commission")}</td>
+            <td>${getRange(product, "serviceFee")}</td>
+            <td>${getLatestSubmitTime(product)}</td>
+            <td>${mainPlan.protect}</td>
+            <td>${mainPlan.period}</td>
+            <td>
+              <div class="actions">
+                <button class="link-btn">推广效果</button>
+                <button class="link-btn detail-toggle" data-id="${product.id}">${isExpanded ? "收起明细" : "计划明细"}</button>
+              </div>
+            </td>
+          </tr>
+          ${isExpanded ? renderDetail(product) : ""}
+        `;
+      }).join("");
+
+      body.querySelectorAll(".detail-toggle").forEach(button => {
+        button.addEventListener("click", () => {
+          const id = button.dataset.id;
+          expanded.has(id) ? expanded.delete(id) : expanded.add(id);
+          renderBody();
+        });
+      });
+    }
+
+    function renderDetail(product) {
+      const statusClass = { success: "green", failed: "red", pending: "orange" };
+      const statusName = { success: "已获重点推广", failed: "暂未重点推广", pending: "竞佣中" };
+      return `
+        <tr class="expand-row">
+          <td colspan="9" class="expand-cell">
+            <div class="detail-box">
+              <div class="detail-head">
+                <span>计划明细：该商品共提报 ${product.plans.length} 条计划</span>
+                <span>商品ID：${product.id}</span>
+              </div>
+              <table class="mini-table">
+                <thead>
+                  <tr>
+                    <th>归属活动</th>
+                    <th>推广状态</th>
+                    <th>佣金率</th>
+                    <th>服务费率</th>
+                    <th>提报时间</th>
+                    <th>保护期</th>
+                    <th>推广时间</th>
+                    <th>暂未重点推广原因</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${product.plans.map(plan => `
+                    <tr>
+                      <td>${plan.activity}<div class="muted">活动ID：${plan.id}</div></td>
+                      <td><span class="pill ${statusClass[plan.result]}">${statusName[plan.result]}</span></td>
+                      <td>${formatPercent(plan.commission)}</td>
+                      <td>${formatPercent(plan.serviceFee)}</td>
+                      <td>${plan.submitTime}</td>
+                      <td>${plan.protect}</td>
+                      <td>${plan.period}</td>
+                      <td>${plan.reason || "--"}</td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table>
+            </div>
+          </td>
+        </tr>
+      `;
+    }
+
+    function bindModal() {
+      const mask = document.getElementById("modalMask");
+      document.getElementById("openReminder").addEventListener("click", () => mask.classList.add("show"));
+      document.getElementById("closeModal").addEventListener("click", () => mask.classList.remove("show"));
+      document.getElementById("confirmModal").addEventListener("click", () => mask.classList.remove("show"));
+      mask.addEventListener("click", event => {
+        if (event.target === mask) mask.classList.remove("show");
+      });
+    }
+
+    function updateReminderCount() {
+      document.getElementById("alertCount").textContent = products.filter(product => getProductStatus(product) === "failed").length;
+    }
+
+    function render() {
+      renderMainTabs();
+      renderSubTabs();
+      renderNotice();
+      updateReminderCount();
+      renderHead();
+      renderBody();
+    }
+
+    bindModal();
+    render();
+  </script>
+</body>
+</html>
