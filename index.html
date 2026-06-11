@@ -753,7 +753,7 @@
             <td>${mainPlan.period}</td>
             <td>
               <div class="actions">
-                <button class="link-btn">推广效果</button>
+                ${currentSub === "success" ? `<button class="link-btn">推广效果</button>` : ""}
                 <button class="link-btn detail-toggle" data-id="${product.id}">${isExpanded ? "收起明细" : "计划明细"}</button>
               </div>
             </td>
