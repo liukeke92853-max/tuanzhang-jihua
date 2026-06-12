@@ -438,7 +438,7 @@
     .drawer-mask.show { display: flex; }
 
     .drawer {
-      width: 720px;
+      width: 860px;
       height: 100%;
       display: grid;
       grid-template-rows: 58px auto 1fr 52px;
@@ -457,16 +457,31 @@
     }
 
     .drawer-summary {
-      padding: 16px 20px;
+      padding: 12px 20px;
       border-bottom: 1px solid var(--line);
       background: #fbfdff;
+    }
+
+    .drawer-summary .product {
+      gap: 8px;
+    }
+
+    .drawer-summary .thumb {
+      width: 38px;
+      height: 38px;
+      flex-basis: 38px;
+      font-size: 11px;
+    }
+
+    .drawer-summary .product-name {
+      max-width: 520px;
     }
 
     .drawer-meta {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px 16px;
-      margin-top: 12px;
+      gap: 8px 16px;
+      margin-top: 8px;
       color: #536173;
       font-size: 13px;
     }
