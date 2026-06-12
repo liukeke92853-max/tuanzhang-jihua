@@ -161,8 +161,7 @@
     }
 
     .sub-tab.active { font-weight: 800; }
-    .sub-tab.success.active { color: var(--green); }
-    .sub-tab.failed.active { color: var(--orange); }
+    .sub-tab.active { color: var(--blue); }
 
     .notice {
       margin: 10px 16px 12px;
@@ -434,7 +433,7 @@
       line-height: 1.65;
     }
 
-    .alert-main b { color: var(--orange); }
+    .alert-main b { color: var(--red); }
     .modal-copy { margin-top: 18px; color: #566176; line-height: 1.75; }
     .modal-foot { padding: 0 24px 24px; display: flex; justify-content: flex-end; }
 
@@ -482,7 +481,7 @@
       <header class="topbar">
         <div class="page-title">合作计划</div>
         <div class="top-actions">
-          <button class="ghost-btn" id="openReminder">暂未重点推广提醒</button>
+          <button class="ghost-btn" id="openReminder">竞佣失败提醒</button>
           <button class="ghost-btn">配置</button>
           <button class="ghost-btn">重置</button>
         </div>
@@ -510,12 +509,12 @@
           <colgroup>
             <col style="width: 300px">
             <col style="width: 92px">
+            <col style="width: 170px">
             <col style="width: 90px">
             <col style="width: 92px">
             <col style="width: 150px">
             <col style="width: 110px">
             <col style="width: 180px">
-            <col style="width: 170px">
             <col style="width: 150px">
           </colgroup>
           <thead id="tableHead"></thead>
@@ -534,143 +533,70 @@
   <div class="modal-mask" id="modalMask">
     <div class="modal">
       <div class="modal-head">
-        <span>暂未重点推广提醒</span>
+        <span>竞佣失败提醒</span>
         <button class="close" id="closeModal">×</button>
       </div>
       <div class="modal-body">
         <div class="alert-main">
-          截止昨日24点，您推广中的商品有 <b id="alertCount">0</b> 个<br>
-          暂未获得抖老板重点推广
+          截止昨日24点，您推广中的计划有 <b id="alertCount">0</b> 条<br>
+          为抖老板内部竞佣失败状态
         </div>
-        <div class="modal-copy">您可以至「合作计划 - 推广中 - 暂未重点推广」查看详情。</div>
-        <div class="modal-copy">说明：抖老板会综合考虑佣金率、服务费率、推广周期等因素筛选重点推广商品。建议关注该商品下各计划配置与推广表现。</div>
+        <div class="modal-copy">您可以至「合作计划 - 推广中 - 抖老板内部竞佣失败」查看详情。</div>
+        <div class="modal-copy">说明：抖老板内部会综合考量佣金率、服务费率、推广时间等因素进行竞佣，竞佣失败的计划曝光量与推广力度将大幅降低，请及时关注！</div>
       </div>
       <div class="modal-foot"><button class="primary-btn" id="confirmModal">我知道了</button></div>
     </div>
   </div>
 
   <script>
-    const products = [
-      {
-        id: "6958210371",
-        name: "【三只松鼠5+2混合坚果】每日坚果畅享款礼盒",
-        store: "三只松鼠官方旗舰店",
-        price: "49.9",
-        category: "食品饮料",
-        thumb: "food",
-        plans: [
-          { id: "3082711", activity: "抖老板商品池2", result: "success", commission: 15, serviceFee: 1.8, submitTime: "2025.09.15 16:25:28", protect: "0个月", period: "2025.09.11 至 2028.09.30", reason: "", score: 96 },
-          { id: "3714537", activity: "抖老板商品池4", result: "failed", commission: 13, serviceFee: 2.2, submitTime: "2025.09.15 02:34:22", protect: "0个月", period: "2025.09.15 至 2026.12.31", reason: "服务费率偏高", score: 80 },
-          { id: "3718059", activity: "抖老板商品池5", result: "failed", commission: 12, serviceFee: 2.5, submitTime: "2025.09.14 18:12:02", protect: "0个月", period: "2025.09.14 至 2026.08.31", reason: "综合竞争力不足", score: 76 }
-        ]
-      },
-      {
-        id: "6043729110",
-        name: "九江双蒸纯粮食米香低度白酒浸泡青梅酒",
-        store: "九江双蒸酒类旗舰店",
-        price: "25.5",
-        category: "酒类",
-        thumb: "wine",
-        plans: [
-          { id: "3714537", activity: "抖老板商品池4", result: "success", commission: 12, serviceFee: 1.8, submitTime: "2025.09.12 01:53:06", protect: "0个月", period: "2025.09.12 至 2026.12.31", reason: "", score: 91 }
-        ]
-      },
-      {
-        id: "8002917436",
-        name: "铜合金布艺胸针 手工制作玫瑰花高级胸针",
-        store: "长卿丝绸饰品店",
-        price: "9.99",
-        category: "钟表配饰",
-        thumb: "beauty",
-        plans: [
-          { id: "1136784", activity: "抖老板商品池", result: "success", commission: 21, serviceFee: 0.6, submitTime: "2025.09.10 05:13:01", protect: "0个月", period: "2025.09.10 至 2028.03.31", reason: "", score: 94 },
-          { id: "3718059", activity: "抖老板商品池5", result: "success", commission: 18, serviceFee: 0.8, submitTime: "2025.09.09 19:20:40", protect: "0个月", period: "2025.09.09 至 2027.12.31", reason: "", score: 88 }
-        ]
-      },
-      {
-        id: "6021834756",
-        name: "【特别添加DHA海藻油】三纯牛初乳奶贝营养零食",
-        store: "三纯官方旗舰店",
-        price: "34.9",
-        category: "食品饮料",
-        thumb: "food",
-        plans: [
-          { id: "3714537", activity: "抖老板商品池4", result: "failed", commission: 15, serviceFee: 3, submitTime: "2025.09.15 02:34:22", protect: "0个月", period: "2025.09.15 至 2026.12.31", reason: "服务费率偏高", score: 70 },
-          { id: "3718059", activity: "抖老板商品池5", result: "failed", commission: 14, serviceFee: 2.8, submitTime: "2025.09.14 21:10:19", protect: "0个月", period: "2025.09.14 至 2026.11.30", reason: "同类商品竞争激烈", score: 69 },
-          { id: "1136784", activity: "抖老板商品池", result: "failed", commission: 13, serviceFee: 2.5, submitTime: "2025.09.13 06:08:48", protect: "0个月", period: "2025.09.13 至 2026.10.31", reason: "转化预估偏低", score: 66 }
-        ]
-      },
-      {
-        id: "7324819002",
-        name: "2025新款春装国风新款时尚刺绣提花长裙",
-        store: "红小蛙工厂店",
-        price: "59.9",
-        category: "服饰内衣",
-        thumb: "beauty",
-        plans: [
-          { id: "3718059", activity: "抖老板商品池5", result: "failed", commission: 15.3, serviceFee: 1.02, submitTime: "2025.09.13 06:08:48", protect: "0个月", period: "2025.09.13 至 2026.07.12", reason: "推广周期较短", score: 78 },
-          { id: "3714537", activity: "抖老板商品池4", result: "failed", commission: 14, serviceFee: 1.2, submitTime: "2025.09.12 05:45:35", protect: "0个月", period: "2025.09.12 至 2026.08.31", reason: "综合竞争力不足", score: 71 }
-        ]
-      },
-      {
-        id: "7129003458",
-        name: "抽纸悬挂式柔软加大加厚多功能壁挂软抽",
-        store: "云锦纸业",
-        price: "12.9",
-        category: "个护家清",
-        thumb: "home",
-        plans: [
-          { id: "3718059", activity: "抖老板商品池5", result: "pending", commission: 10, serviceFee: 1.2, submitTime: "2025.09.14 04:55:31", protect: "0个月", period: "2025.09.14 至 2026.12.31", reason: "", score: 0 },
-          { id: "3714537", activity: "抖老板商品池4", result: "failed", commission: 10, serviceFee: 1.2, submitTime: "2025.09.13 05:11:35", protect: "0个月", period: "2025.09.13 至 2026.12.31", reason: "等待其他计划结果", score: 64 }
-        ]
-      }
+    const plans = [
+      { planId: "3082711", productId: "6958210371", name: "【三只松鼠5+2混合坚果】每日坚果畅享款礼盒", store: "三只松鼠官方旗舰店", price: "49.9", category: "食品饮料", thumb: "food", activity: "抖老板商品池2", result: "success", commission: 15, serviceFee: 1.8, submitTime: "2025.09.15 16:25:28", protect: "0个月", period: "2025.09.11 至 2028.09.30", failType: "", reason: "" },
+      { planId: "3714537", productId: "6958210371", name: "【三只松鼠5+2混合坚果】每日坚果畅享款礼盒", store: "三只松鼠官方旗舰店", price: "49.9", category: "食品饮料", thumb: "food", activity: "抖老板商品池4", result: "failed", commission: 13, serviceFee: 2.2, submitTime: "2025.09.15 02:34:22", protect: "0个月", period: "2025.09.15 至 2026.12.31", failType: "lost_to_other_leader", reason: "竞佣失败给其他团长" },
+      { planId: "3718059", productId: "6958210371", name: "【三只松鼠5+2混合坚果】每日坚果畅享款礼盒", store: "三只松鼠官方旗舰店", price: "49.9", category: "食品饮料", thumb: "food", activity: "抖老板商品池5", result: "failed", commission: 12, serviceFee: 2.5, submitTime: "2025.09.14 18:12:02", protect: "0个月", period: "2025.09.14 至 2026.08.31", failType: "lost_to_other_leader", reason: "竞佣失败给其他团长" },
+      { planId: "3714537", productId: "6043729110", name: "九江双蒸纯粮食米香低度白酒浸泡青梅酒", store: "九江双蒸酒类旗舰店", price: "25.5", category: "酒类", thumb: "wine", activity: "抖老板商品池4", result: "success", commission: 12, serviceFee: 1.8, submitTime: "2025.09.12 01:53:06", protect: "0个月", period: "2025.09.12 至 2026.12.31", failType: "", reason: "" },
+      { planId: "1136784", productId: "8002917436", name: "铜合金布艺胸针 手工制作玫瑰花高级胸针", store: "长卿丝绸饰品店", price: "9.99", category: "钟表配饰", thumb: "beauty", activity: "抖老板商品池", result: "success", commission: 21, serviceFee: 0.6, submitTime: "2025.09.10 05:13:01", protect: "0个月", period: "2025.09.10 至 2028.03.31", failType: "", reason: "" },
+      { planId: "3718059", productId: "8002917436", name: "铜合金布艺胸针 手工制作玫瑰花高级胸针", store: "长卿丝绸饰品店", price: "9.99", category: "钟表配饰", thumb: "beauty", activity: "抖老板商品池5", result: "success", commission: 18, serviceFee: 0.8, submitTime: "2025.09.09 19:20:40", protect: "0个月", period: "2025.09.09 至 2027.12.31", failType: "", reason: "" },
+      { planId: "3714537", productId: "6021834756", name: "【特别添加DHA海藻油】三纯牛初乳奶贝营养零食", store: "三纯官方旗舰店", price: "34.9", category: "食品饮料", thumb: "food", activity: "抖老板商品池4", result: "failed", commission: 15, serviceFee: 3, submitTime: "2025.09.15 02:34:22", protect: "0个月", period: "2025.09.15 至 2026.12.31", failType: "lost_to_other_leader", reason: "竞佣失败给其他团长" },
+      { planId: "3718059", productId: "6021834756", name: "【特别添加DHA海藻油】三纯牛初乳奶贝营养零食", store: "三纯官方旗舰店", price: "34.9", category: "食品饮料", thumb: "food", activity: "抖老板商品池5", result: "failed", commission: 14, serviceFee: 2.8, submitTime: "2025.09.14 21:10:19", protect: "0个月", period: "2025.09.14 至 2026.11.30", failType: "lost_to_other_leader", reason: "竞佣失败给其他团长" },
+      { planId: "1136784", productId: "6021834756", name: "【特别添加DHA海藻油】三纯牛初乳奶贝营养零食", store: "三纯官方旗舰店", price: "34.9", category: "食品饮料", thumb: "food", activity: "抖老板商品池", result: "failed", commission: 13, serviceFee: 2.5, submitTime: "2025.09.13 06:08:48", protect: "0个月", period: "2025.09.13 至 2026.10.31", failType: "lost_to_other_leader", reason: "竞佣失败给其他团长" },
+      { planId: "3718059", productId: "7324819002", name: "2025新款春装国风新款时尚刺绣提花长裙", store: "红小蛙工厂店", price: "59.9", category: "服饰内衣", thumb: "beauty", activity: "抖老板商品池5", result: "failed", commission: 15.3, serviceFee: 1.02, submitTime: "2025.09.13 06:08:48", protect: "0个月", period: "2025.09.13 至 2026.07.12", failType: "lost_to_other_leader", reason: "竞佣失败给其他团长" },
+      { planId: "3714537", productId: "7324819002", name: "2025新款春装国风新款时尚刺绣提花长裙", store: "红小蛙工厂店", price: "59.9", category: "服饰内衣", thumb: "beauty", activity: "抖老板商品池4", result: "failed", commission: 14, serviceFee: 1.2, submitTime: "2025.09.12 05:45:35", protect: "0个月", period: "2025.09.12 至 2026.08.31", failType: "other", reason: "推广周期较短，不进入竞佣失败页" },
+      { planId: "3714537", productId: "7129003458", name: "抽纸悬挂式柔软加大加厚多功能壁挂软抽", store: "云锦纸业", price: "12.9", category: "个护家清", thumb: "home", activity: "抖老板商品池4", result: "failed", commission: 10, serviceFee: 1.2, submitTime: "2025.09.13 05:11:35", protect: "0个月", period: "2025.09.13 至 2026.12.31", failType: "other", reason: "等待其他计划结果，不进入竞佣失败页" }
     ];
+
+    const successPlans = () => plans.filter(plan => plan.result === "success");
+    const failedLostPlans = () => plans.filter(plan => plan.result === "failed" && plan.failType === "lost_to_other_leader");
+    const failedGroups = () => {
+      const groups = new Map();
+      failedLostPlans().forEach(plan => {
+        if (!groups.has(plan.productId)) groups.set(plan.productId, []);
+        groups.get(plan.productId).push(plan);
+      });
+      return [...groups.values()].map(group => ({
+        key: group[0].productId,
+        representative: [...group].sort((a, b) => b.commission - a.commission)[0],
+        plans: [...group].sort((a, b) => b.commission - a.commission)
+      }));
+    };
 
     const mainTabs = [
       { key: "review", label: "待审核", count: 0 },
-      { key: "promoting", label: "推广中", count: products.length },
+      { key: "promoting", label: "推广中", count: 6 },
       { key: "rejected", label: "申请未通过", count: 342 },
       { key: "ended", label: "合作已终止", count: 58 },
       { key: "expired", label: "合作已到期", count: 293 }
     ];
 
     const subTabs = [
-      { key: "success", label: "已获重点推广" },
-      { key: "failed", label: "暂未重点推广" }
+      { key: "success", label: "抖老板内部竞佣成功" },
+      { key: "failed", label: "抖老板内部竞佣失败" }
     ];
 
     let currentSub = "success";
     const expanded = new Set();
 
-    function getProductStatus(product) {
-      if (product.plans.some(plan => plan.result === "success")) return "success";
-      if (product.plans.some(plan => plan.result === "pending")) return "pending";
-      return "failed";
-    }
-
-    function countByResult(product, result) {
-      return product.plans.filter(plan => plan.result === result).length;
-    }
-
-    function getMainPlan(product) {
-      const status = getProductStatus(product);
-      const target = status === "success" ? "success" : "failed";
-      return [...product.plans].filter(plan => plan.result === target).sort((a, b) => b.score - a.score)[0] || product.plans[0];
-    }
-
-    function getLatestSubmitTime(product) {
-      return product.plans.map(plan => plan.submitTime).sort().at(-1);
-    }
-
     function formatPercent(value) {
       return `${value}%`;
-    }
-
-    function getRange(product, field) {
-      const values = product.plans.map(plan => plan[field]);
-      const min = Math.min(...values);
-      const max = Math.max(...values);
-      return min === max ? formatPercent(min) : `${formatPercent(min)}-${formatPercent(max)}`;
     }
 
     function renderMainTabs() {
@@ -681,10 +607,13 @@
 
     function renderSubTabs() {
       const target = document.getElementById("subTabs");
-      target.innerHTML = subTabs.map(tab => {
-        const count = products.filter(product => getProductStatus(product) === tab.key).length;
-        return `<button class="sub-tab ${tab.key} ${tab.key === currentSub ? "active" : ""}" data-key="${tab.key}">${tab.label}（${count}）</button>`;
-      }).join("");
+      const counts = {
+        success: successPlans().length,
+        failed: failedGroups().length
+      };
+      target.innerHTML = subTabs.map(tab => `
+        <button class="sub-tab ${tab.key} ${tab.key === currentSub ? "active" : ""}" data-key="${tab.key}">${tab.label}（${counts[tab.key]}）</button>
+      `).join("");
       target.querySelectorAll(".sub-tab").forEach(button => {
         button.addEventListener("click", () => {
           currentSub = button.dataset.key;
@@ -696,21 +625,22 @@
 
     function renderNotice() {
       const copy = {
-        success: "已获重点推广说明：抖老板内部会综合考量佣金率、服务费率、推广时间等因素，筛选出更适合重点推广的商品；已获重点推广的商品将获得更多平台流量助力。",
-        failed: "暂未重点推广说明：抖老板内部会综合考量佣金率、服务费率、推广时间等因素进行评估，暂未重点推广的商品曝光量与推广力度将大幅降低，请及时关注！"
+        success: "竞佣成功说明：抖老板内部会综合考量佣金率、服务费、推广时间等因素进行内部竞佣，竞佣成功的计划会享受平台流量助力，进行重点推广。",
+        failed: "竞佣失败说明：抖老板内部会综合考量佣金率、服务费率、推广时间等因素进行竞佣，竞佣失败给其他团长的计划曝光量与推广力度将大幅降低，请及时关注！"
       }[currentSub];
       document.getElementById("notice").innerHTML = `<span class="notice-dot">i</span><span>${copy}</span>`;
     }
 
     function renderHead() {
+      const activityTitle = currentSub === "success" ? "归属活动" : "计划汇总";
       document.getElementById("tableHead").innerHTML = `
         <tr>
           <th>商品信息</th>
           <th>商品类目</th>
-          <th>计划汇总</th>
+          <th>${activityTitle}</th>
           <th>佣金率</th>
           <th>服务费率</th>
-          <th>最近提报时间</th>
+          <th>提报时间</th>
           <th>团长保护期</th>
           <th>推广时间</th>
           <th>操作</th>
@@ -718,47 +648,56 @@
       `;
     }
 
+    function renderActivityCell(plan) {
+      return `<div class="product-name">${plan.activity}</div><div class="muted">活动ID：${plan.planId}</div>`;
+    }
+
+    function renderProductCell(plan) {
+      return `
+        <div class="product">
+          <div class="thumb ${plan.thumb}">${plan.category.slice(0, 2)}</div>
+          <div style="min-width:0">
+            <div class="product-name">${plan.name}</div>
+            <div class="product-meta">店铺：${plan.store}　￥${plan.price}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPlanRow(plan, options = {}) {
+      const isExpanded = expanded.has(options.key);
+      return `
+        <tr>
+          <td>${renderProductCell(plan)}</td>
+          <td>${plan.category}</td>
+          <td>${options.summary || renderActivityCell(plan)}</td>
+          <td>${formatPercent(plan.commission)}</td>
+          <td>${formatPercent(plan.serviceFee)}</td>
+          <td>${plan.submitTime}</td>
+          <td>${plan.protect}</td>
+          <td>${plan.period}</td>
+          <td>
+            <div class="actions">
+              ${currentSub === "success" ? `<button class="link-btn">推广效果</button>` : ""}
+              ${currentSub === "failed" ? `<button class="link-btn detail-toggle" data-id="${options.key}">${isExpanded ? "收起明细" : "计划明细"}</button>` : ""}
+            </div>
+          </td>
+        </tr>
+      `;
+    }
+
     function renderBody() {
-      const rows = products.filter(product => getProductStatus(product) === currentSub);
       const body = document.getElementById("tableBody");
-      body.innerHTML = rows.map(product => {
-        const mainPlan = getMainPlan(product);
-        const success = countByResult(product, "success");
-        const failed = countByResult(product, "failed");
-        const pending = countByResult(product, "pending");
-        const isExpanded = expanded.has(product.id);
+      if (currentSub === "success") {
+        body.innerHTML = successPlans().map(plan => renderPlanRow(plan)).join("");
+        return;
+      }
+
+      body.innerHTML = failedGroups().map(group => {
+        const summary = `<div class="summary"><div class="summary-line failed">竞佣失败计划：${group.plans.length}条</div></div>`;
         return `
-          <tr>
-            <td>
-              <div class="product">
-                <div class="thumb ${product.thumb}">${product.category.slice(0, 2)}</div>
-                <div style="min-width:0">
-                  <div class="product-name">${product.name}</div>
-                  <div class="product-meta">店铺：${product.store}　￥${product.price}</div>
-                </div>
-              </div>
-            </td>
-            <td>${product.category}</td>
-            <td>
-              <div class="summary">
-                <div class="summary-line success">重点推广：${success}条</div>
-                <div class="summary-line failed">暂未推广：${failed}条</div>
-                ${pending ? `<div class="summary-line pending">竞佣中：${pending}条</div>` : ""}
-              </div>
-            </td>
-            <td>${getRange(product, "commission")}</td>
-            <td>${getRange(product, "serviceFee")}</td>
-            <td>${getLatestSubmitTime(product)}</td>
-            <td>${mainPlan.protect}</td>
-            <td>${mainPlan.period}</td>
-            <td>
-              <div class="actions">
-                ${currentSub === "success" ? `<button class="link-btn">推广效果</button>` : ""}
-                <button class="link-btn detail-toggle" data-id="${product.id}">${isExpanded ? "收起明细" : "计划明细"}</button>
-              </div>
-            </td>
-          </tr>
-          ${isExpanded ? renderDetail(product) : ""}
+          ${renderPlanRow(group.representative, { key: group.key, summary })}
+          ${expanded.has(group.key) ? renderDetail(group) : ""}
         `;
       }).join("");
 
@@ -771,41 +710,37 @@
       });
     }
 
-    function renderDetail(product) {
-      const statusClass = { success: "green", failed: "red", pending: "orange" };
-      const statusName = { success: "已获重点推广", failed: "暂未重点推广", pending: "竞佣中" };
+    function renderDetail(group) {
       return `
         <tr class="expand-row">
           <td colspan="9" class="expand-cell">
             <div class="detail-box">
               <div class="detail-head">
-                <span>计划明细：该商品共提报 ${product.plans.length} 条计划</span>
-                <span>商品ID：${product.id}</span>
+                <span>计划明细：共 ${group.plans.length} 条竞佣失败计划，主列表展示佣金率最高的一条</span>
+                <span>商品ID：${group.key}</span>
               </div>
               <table class="mini-table">
                 <thead>
                   <tr>
                     <th>归属活动</th>
-                    <th>推广状态</th>
                     <th>佣金率</th>
                     <th>服务费率</th>
                     <th>提报时间</th>
                     <th>保护期</th>
                     <th>推广时间</th>
-                    <th>暂未重点推广原因</th>
+                    <th>竞佣失败原因</th>
                   </tr>
                 </thead>
                 <tbody>
-                  ${product.plans.map(plan => `
+                  ${group.plans.map(plan => `
                     <tr>
-                      <td>${plan.activity}<div class="muted">活动ID：${plan.id}</div></td>
-                      <td><span class="pill ${statusClass[plan.result]}">${statusName[plan.result]}</span></td>
+                      <td>${plan.activity}<div class="muted">活动ID：${plan.planId}</div></td>
                       <td>${formatPercent(plan.commission)}</td>
                       <td>${formatPercent(plan.serviceFee)}</td>
                       <td>${plan.submitTime}</td>
                       <td>${plan.protect}</td>
                       <td>${plan.period}</td>
-                      <td>${plan.reason || "--"}</td>
+                      <td>${plan.reason}</td>
                     </tr>
                   `).join("")}
                 </tbody>
@@ -827,7 +762,7 @@
     }
 
     function updateReminderCount() {
-      document.getElementById("alertCount").textContent = products.filter(product => getProductStatus(product) === "failed").length;
+      document.getElementById("alertCount").textContent = failedLostPlans().length;
     }
 
     function render() {
