@@ -324,16 +324,6 @@
       white-space: nowrap;
     }
 
-    .expand-row { background: #fbfdff; }
-    .expand-cell { padding: 0 12px 16px 68px; }
-
-    .detail-box {
-      overflow: hidden;
-      border: 1px solid #dfe8f7;
-      border-radius: 8px;
-      background: #fff;
-    }
-
     .mini-table th { height: 36px; background: #fff; font-size: 12px; }
     .mini-table td { padding: 8px 12px; font-size: 12px; }
 
@@ -434,6 +424,69 @@
       background: var(--blue);
       cursor: pointer;
       font-weight: 700;
+    }
+
+    .drawer-mask {
+      position: fixed;
+      inset: 0;
+      display: none;
+      justify-content: flex-end;
+      background: rgba(17, 24, 39, .28);
+      z-index: 18;
+    }
+
+    .drawer-mask.show { display: flex; }
+
+    .drawer {
+      width: 720px;
+      height: 100%;
+      display: grid;
+      grid-template-rows: 58px auto 1fr 52px;
+      background: #fff;
+      box-shadow: -18px 0 42px rgba(15, 23, 42, .16);
+    }
+
+    .drawer-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      border-bottom: 1px solid var(--line);
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .drawer-summary {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfdff;
+    }
+
+    .drawer-meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px 16px;
+      margin-top: 12px;
+      color: #536173;
+      font-size: 13px;
+    }
+
+    .drawer-table-wrap {
+      overflow: auto;
+    }
+
+    .drawer-table-wrap table {
+      min-width: 860px;
+    }
+
+    .drawer-pagination {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 0 20px;
+      border-top: 1px solid var(--line);
+      background: #fff;
     }
   </style>
 </head>
@@ -536,6 +589,36 @@
     </div>
   </div>
 
+  <div class="drawer-mask" id="drawerMask">
+    <aside class="drawer">
+      <div class="drawer-head">
+        <span>计划明细</span>
+        <button class="close" id="closeDrawer">×</button>
+      </div>
+      <div class="drawer-summary" id="drawerSummary"></div>
+      <div class="drawer-table-wrap">
+        <table class="mini-table">
+          <thead>
+            <tr>
+              <th>归属活动</th>
+              <th>计划机制</th>
+              <th>提报时间</th>
+              <th>推广时间</th>
+              <th>竞佣失败原因</th>
+            </tr>
+          </thead>
+          <tbody id="drawerBody"></tbody>
+        </table>
+      </div>
+      <div class="drawer-pagination">
+        <span class="page-size">10条/页</span>
+        <button class="page-btn">‹</button>
+        <button class="page-btn active">1</button>
+        <button class="page-btn">›</button>
+      </div>
+    </aside>
+  </div>
+
   <script>
     const plans = [
       { planId: "3082711", productId: "6958210371", name: "【三只松鼠5+2混合坚果】每日坚果畅享款礼盒", store: "三只松鼠官方旗舰店", price: "49.9", category: "食品饮料", thumb: "food", activity: "抖老板商品池2", result: "success", commission: 15, serviceFee: 1.8, submitTime: "2025.09.15 16:25:28", protect: "0个月", period: "2025.09.11 至 2028.09.30", failType: "", reason: "" },
@@ -581,7 +664,7 @@
     ];
 
     let currentSub = "success";
-    const expanded = new Set();
+    let currentDrawerGroup = null;
 
     function formatPercent(value) {
       return `${value}%`;
@@ -605,7 +688,7 @@
       target.querySelectorAll(".sub-tab").forEach(button => {
         button.addEventListener("click", () => {
           currentSub = button.dataset.key;
-          expanded.clear();
+          closeDrawer();
           render();
         });
       });
@@ -653,7 +736,6 @@
     }
 
     function renderPlanRow(plan, options = {}) {
-      const isExpanded = expanded.has(options.key);
       return `
         <tr>
           <td>${renderProductCell(plan)}</td>
@@ -667,7 +749,7 @@
           <td>
             <div class="actions">
               ${currentSub === "success" ? `<button class="link-btn">推广效果</button>` : ""}
-              ${currentSub === "failed" ? `<button class="link-btn detail-toggle" data-id="${options.key}">${isExpanded ? "收起明细" : "计划明细"}</button>` : ""}
+              ${currentSub === "failed" ? `<button class="link-btn detail-toggle" data-id="${options.key}">计划明细</button>` : ""}
             </div>
           </td>
         </tr>
@@ -683,56 +765,48 @@
 
       body.innerHTML = failedGroups().map(group => {
         const summary = `<div class="summary"><div class="summary-line failed">竞佣失败计划：${group.plans.length}条</div></div>`;
-        return `
-          ${renderPlanRow(group.representative, { key: group.key, summary })}
-          ${expanded.has(group.key) ? renderDetail(group) : ""}
-        `;
+        return renderPlanRow(group.representative, { key: group.key, summary });
       }).join("");
 
       body.querySelectorAll(".detail-toggle").forEach(button => {
         button.addEventListener("click", () => {
-          const id = button.dataset.id;
-          expanded.has(id) ? expanded.delete(id) : expanded.add(id);
-          renderBody();
+          const group = failedGroups().find(item => item.key === button.dataset.id);
+          if (group) openDrawer(group);
         });
       });
     }
 
-    function renderDetail(group) {
-      return `
-        <tr class="expand-row">
-          <td colspan="9" class="expand-cell">
-            <div class="detail-box">
-              <table class="mini-table">
-                <thead>
-                  <tr>
-                    <th>归属活动</th>
-                    <th>佣金率</th>
-                    <th>服务费率</th>
-                    <th>提报时间</th>
-                    <th>保护期</th>
-                    <th>推广时间</th>
-                    <th>竞佣失败原因</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${group.plans.map(plan => `
-                    <tr>
-                      <td>${plan.activity}<div class="muted">活动ID：${plan.planId}</div></td>
-                      <td>${formatPercent(plan.commission)}</td>
-                      <td>${formatPercent(plan.serviceFee)}</td>
-                      <td>${plan.submitTime}</td>
-                      <td>${plan.protect}</td>
-                      <td>${plan.period}</td>
-                      <td>${plan.reason}</td>
-                    </tr>
-                  `).join("")}
-                </tbody>
-              </table>
+    function openDrawer(group) {
+      currentDrawerGroup = group;
+      const product = group.representative;
+      document.getElementById("drawerSummary").innerHTML = `
+        ${renderProductCell(product)}
+        <div class="drawer-meta">
+          <div>商品ID：${product.productId}</div>
+          <div>商品类目：${product.category}</div>
+          <div>竞佣失败计划：${group.plans.length}条</div>
+        </div>
+      `;
+      document.getElementById("drawerBody").innerHTML = group.plans.map(plan => `
+        <tr>
+          <td>${plan.activity}<div class="muted">活动ID：${plan.planId}</div></td>
+          <td>
+            <div class="summary">
+              <div class="summary-line">佣金率：${formatPercent(plan.commission)}</div>
+              <div class="summary-line">服务费率：${formatPercent(plan.serviceFee)}</div>
             </div>
           </td>
+          <td>${plan.submitTime}</td>
+          <td>${plan.period}</td>
+          <td>${plan.reason}</td>
         </tr>
-      `;
+      `).join("");
+      document.getElementById("drawerMask").classList.add("show");
+    }
+
+    function closeDrawer() {
+      currentDrawerGroup = null;
+      document.getElementById("drawerMask").classList.remove("show");
     }
 
     function bindModal() {
@@ -742,6 +816,14 @@
       document.getElementById("confirmModal").addEventListener("click", () => mask.classList.remove("show"));
       mask.addEventListener("click", event => {
         if (event.target === mask) mask.classList.remove("show");
+      });
+    }
+
+    function bindDrawer() {
+      const mask = document.getElementById("drawerMask");
+      document.getElementById("closeDrawer").addEventListener("click", closeDrawer);
+      mask.addEventListener("click", event => {
+        if (event.target === mask) closeDrawer();
       });
     }
 
@@ -759,6 +841,7 @@
     }
 
     bindModal();
+    bindDrawer();
     render();
   </script>
 </body>
